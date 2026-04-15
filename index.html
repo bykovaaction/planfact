@@ -395,8 +395,8 @@
 
   <header>
     <div class="header-left">
-      <div class="eyebrow">Финансовый анализ</div>
-      <h1>Отклонение план-факт по финансовому результату: проверьте на своих данных</h1>
+      <div class="eyebrow">План-факт анализ</div>
+      <h1>Отклонение план-факт по финансовому результату</h1>
     </div>
   </header>
 
@@ -408,18 +408,18 @@
         <div class="panel-head">Исходные данные</div>
         <div class="input-panel">
           <div class="field">
-            <label for="plan">Плановый показатель</label>
+            <label for="plan">План</label>
             <div class="input-wrap">
-              <input id="plan" type="text" inputmode="decimal" placeholder="0" autocomplete="off">
+              <input id="plan" type="text" inputmode="decimal" placeholder="-100" autocomplete="off">
             </div>
           </div>
           <div class="field">
-            <label for="fact">Фактический результат</label>
+            <label for="fact">Факт</label>
             <div class="input-wrap">
-              <input id="fact" type="text" inputmode="decimal" placeholder="0" autocomplete="off">
+              <input id="fact" type="text" inputmode="decimal" placeholder="50" autocomplete="off">
             </div>
           </div>
-          <button class="btn" id="calcBtn" type="button"><span>Рассчитать отклонение</span></button>
+          <button class="btn" id="calcBtn" type="button"><span>Показать результат</span></button>
           <div class="error-msg" id="error"></div>
         </div>
       </div>
@@ -467,7 +467,7 @@
 
       <!-- Chart -->
       <div class="panel chart-panel">
-        <div class="panel-head">Визуализация план / факт</div>
+        <div class="panel-head">Диаграмма план / факт</div>
         <div class="chart-body">
           <div class="chart-svg-wrap">
             <svg id="chartSvg" viewBox="0 0 680 280" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
@@ -508,8 +508,8 @@
             </svg>
           </div>
           <div class="chart-axis-labels">
-            <span>Плановый период</span>
-            <span>Фактический результат</span>
+            <span>План</span>
+            <span>Факт</span>
           </div>
         </div>
       </div>
@@ -571,24 +571,24 @@
   // ─── Interpretation ───────────────────────────────────────
   function getVerdict(plan, fact) {
     if (plan === 0) {
-      if (fact === 0) return { cls: "neu", icon: "→", text: "Результат совпал с планом. Отклонение равно нулю." };
+      if (fact === 0) return { cls: "neu", icon: "→", text: "Факт соответствует плану." };
       if (fact > 0)  return { cls: "pos", icon: "↑", text: "Получена прибыль при нулевом плане." };
       return { cls: "neg", icon: "↓", text: "Получен убыток при нулевом плане." };
     }
     if (plan > 0 && fact > 0) {
       const pct = Math.round(((fact - plan) / plan) * 100);
-      if (fact > plan) return { cls: "pos", icon: "↑", text: `Прибыль превысила план на <strong>${fmtPct(pct)}</strong>. Результат лучше ожидаемого.` };
-      if (fact < plan) return { cls: "neg", icon: "↓", text: `Прибыль не достигла плана — отставание <strong>${fmtPct(pct)}</strong>. Требуется анализ причин.` };
-      return { cls: "neu", icon: "→", text: "Прибыль строго соответствует плану." };
+      if (fact > plan) return { cls: "pos", icon: "↑", text: `Прибыль превысила план на <strong>${fmtPct(pct)}</strong>.` };
+      if (fact < plan) return { cls: "neg", icon: "↓", text: `Прибыль не достигла плана — отставание <strong>${fmtPct(pct)}</strong>.` };
+      return { cls: "neu", icon: "→", text: "Прибыль соответствует плану." };
     }
     if (plan < 0 && fact < 0) {
       const pct = Math.round(((fact - plan) / Math.abs(plan)) * 100);
-      if (fact > plan) return { cls: "pos", icon: "↑", text: `Убыток оказался меньше планового на <strong>${fmtPct(-pct)}</strong>. Потери сдержаны.` };
-      if (fact < plan) return { cls: "neg", icon: "↓", text: `Убыток превысил план на <strong>${fmtPct(Math.abs(pct))}</strong>. Ситуация хуже ожидаемой.` };
-      return { cls: "neu", icon: "→", text: "Убыток соответствует плановой отметке." };
+      if (fact > plan) return { cls: "pos", icon: "↑", text: `Убыток меньше планового на <strong>${fmtPct(-pct)}</strong>.` };
+      if (fact < plan) return { cls: "neg", icon: "↓", text: `Убыток выше планового на <strong>${fmtPct(Math.abs(pct))}</strong>.` };
+      return { cls: "neu", icon: "→", text: "Убыток соответствует плану." };
     }
-    if (plan < 0 && fact > 0) return { cls: "pos", icon: "↑", text: "Компания вышла из убытка в прибыль. Знаковый перелом." };
-    if (plan > 0 && fact < 0) return { cls: "neg", icon: "↓", text: "Компания сменила прибыль на убыток. Требуется немедленный разбор." };
+    if (plan < 0 && fact > 0) return { cls: "pos", icon: "↑", text: "Компания вышла из убытка в прибыль." };
+    if (plan > 0 && fact < 0) return { cls: "neg", icon: "↓", text: "Компания перешла от прибыли к убытку." };
     return { cls: "neu", icon: "→", text: "Нет изменений." };
   }
 
@@ -718,7 +718,7 @@
     if (plan === 0) {
       kpiDev.textContent = "n/a";
       kpiDev.className = "kpi-value";
-      kpiDevSub.textContent = "план = 0";
+      kpiDevSub.textContent = "процент не рассчитывается";
     } else {
       const dev = ((fact - plan) / Math.abs(plan)) * 100;
       const devRnd = Math.round(dev);
@@ -742,17 +742,17 @@
       breakdown.className = "breakdown show";
       const extra = Math.round((Math.abs(fact) / Math.abs(plan)) * 100);
       if (plan < 0 && fact > 0) {
-        bd1Label.textContent = "Покрытие убытка";
+        bd1Label.textContent = "Закрыли убыток";
         bd1Value.textContent = "100%";
         bd1Value.className = "bd-cell-value pos";
-        bd2Label.textContent = "Сверх нулевой отметки";
+        bd2Label.textContent = "Получили прибыль сверх этого";
         bd2Value.textContent = `+${extra}%`;
         bd2Value.className = "bd-cell-value pos";
       } else {
-        bd1Label.textContent = "Потеря прибыли";
+        bd1Label.textContent = "Потеряли прибыль";
         bd1Value.textContent = "−100%";
         bd1Value.className = "bd-cell-value neg";
-        bd2Label.textContent = "Уход в убыток";
+        bd2Label.textContent = "Ушли в убыток";
         bd2Value.textContent = `−${extra}%`;
         bd2Value.className = "bd-cell-value neg";
       }
