@@ -396,7 +396,7 @@
   <header>
     <div class="header-left">
       <div class="eyebrow">План-факт анализ</div>
-      <h1>Отклонение план-факт по финансовому результату</h1>
+      <h1>Отклонение план-факт по прибыли и убытку</h1>
     </div>
   </header>
 
@@ -569,19 +569,19 @@
   function getVerdict(plan, fact) {
     if (plan === 0) {
       if (fact === 0) return { cls: "neu", icon: "→", text: "Факт соответствует плану" };
-      if (fact > 0)  return { cls: "pos", icon: "↑", text: "Получена прибыль при нулевом плане" };
-      return { cls: "neg", icon: "↓", text: "Получен убыток при нулевом плане" };
+      if (fact > 0)  return { cls: "pos", icon: "↑", text: "При нулевом плане компания получила прибыль" };
+      return { cls: "neg", icon: "↓", text: "При нулевом плане компания получила убыток" };
     }
     if (plan > 0 && fact > 0) {
       const pct = Math.round(((fact - plan) / plan) * 100);
-      if (fact > plan) return { cls: "pos", icon: "↑", text: `Прибыль превысила план на <strong>${fmtPct(pct)}</strong>` };
-      if (fact < plan) return { cls: "neg", icon: "↓", text: `Прибыль не достигла плана — отставание <strong>${fmtPct(pct)}</strong>` };
+      if (fact > plan) return { cls: "pos", icon: "↑", text: `Факт выше плана на <strong>${fmtPct(pct)}</strong>` };
+      if (fact < plan) return { cls: "neg", icon: "↓", text: `Факт ниже плана на <strong>${fmtPct(pct)}</strong>` };
       return { cls: "neu", icon: "→", text: "Прибыль соответствует плану" };
     }
     if (plan < 0 && fact < 0) {
       const pct = Math.round(((fact - plan) / Math.abs(plan)) * 100);
-      if (fact > plan) return { cls: "pos", icon: "↑", text: `Убыток меньше планового на <strong>${fmtPct(-pct)}</strong>` };
-      if (fact < plan) return { cls: "neg", icon: "↓", text: `Убыток выше планового на <strong>${fmtPct(Math.abs(pct))}</strong>` };
+      if (fact > plan) return { cls: "pos", icon: "↑", text: `Фактический убыток меньше планового на <strong>${fmtPct(-pct)}</strong>` };
+      if (fact < plan) return { cls: "neg", icon: "↓", text: `Фактический убыток выше планового на <strong>${fmtPct(Math.abs(pct))}</strong>` };
       return { cls: "neu", icon: "→", text: "Убыток соответствует плану" };
     }
     if (plan < 0 && fact > 0) return { cls: "pos", icon: "↑", text: "Компания вышла из убытка в прибыль" };
@@ -740,7 +740,7 @@
         bd1Label.textContent = "Закрыли убыток";
         bd1Value.textContent = "100%";
         bd1Value.className = "bd-cell-value pos";
-        bd2Label.textContent = "Получили прибыль сверх этого";
+        bd2Label.textContent = "После покрытия убытка получили прибыль";
         bd2Value.textContent = `+${extra}%`;
         bd2Value.className = "bd-cell-value pos";
       } else {
