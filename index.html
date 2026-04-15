@@ -396,7 +396,7 @@
   <header>
     <div class="header-left">
       <div class="eyebrow">План-факт анализ</div>
-      <h1>Отклонение план-факт по прибыли и убытку</h1>
+      <h1>Как считать отклонение план-факт по прибыли и убытку</h1>
     </div>
   </header>
 
@@ -419,7 +419,7 @@
               <input id="fact" type="text" inputmode="decimal" placeholder="50" autocomplete="off">
             </div>
           </div>
-          <button class="btn" id="calcBtn" type="button"><span>Показать результат</span></button>
+          <button class="btn" id="calcBtn" type="button"><span>Рассчитать отклонение</span></button>
           <div class="error-msg" id="error"></div>
         </div>
       </div>
@@ -441,10 +441,11 @@
           <div class="kpi-sub" id="kpiFactSub"></div>
         </div>
         <div class="kpi">
-          <div class="kpi-label">Отклонение</div>
-          <div class="kpi-value" id="kpiDev">—</div>
-          <div class="kpi-sub" id="kpiDevSub"></div>
-        </div>
+  <div class="kpi-label">Отклонение</div>
+  <div class="kpi-value" id="kpiDev">—</div>
+  <div class="kpi-sub" id="kpiDevSub"></div>
+  <div class="kpi-sub" id="kpiMethod"></div>
+</div>
       </div>
 
       <!-- Verdict -->
@@ -453,8 +454,10 @@
         <div class="verdict-text" id="verdictText"></div>
       </div>
 
-      <!-- Breakdown (cross-zero) -->
-      <div class="breakdown" id="breakdown">
+     <!-- Breakdown (cross-zero) -->
+<div class="panel" id="breakdownPanel" style="display:none;">
+  <div class="panel-head">Структура изменения</div>
+  <div class="breakdown" id="breakdown">
         <div class="bd-cell">
           <div class="bd-cell-label" id="bd1Label"></div>
           <div class="bd-cell-value" id="bd1Value"></div>
@@ -463,7 +466,8 @@
           <div class="bd-cell-label" id="bd2Label"></div>
           <div class="bd-cell-value" id="bd2Value"></div>
         </div>
-      </div>
+        </div>
+    </div>
 
       <!-- Chart -->
       <div class="panel chart-panel">
@@ -530,12 +534,14 @@
   const kpiDev     = $("kpiDev");
   const kpiPlanSub = $("kpiPlanSub");
   const kpiFactSub = $("kpiFactSub");
-  const kpiDevSub  = $("kpiDevSub");
-  const verdict    = $("verdict");
+ const kpiDevSub  = $("kpiDevSub");
+const kpiMethod  = $("kpiMethod");
+const verdict    = $("verdict");
   const verdictIcon= $("verdictIcon");
   const verdictText= $("verdictText");
-  const breakdown  = $("breakdown");
-  const bd1Label   = $("bd1Label");
+  const breakdownPanel = $("breakdownPanel");
+const breakdown  = $("breakdown");
+const bd1Label   = $("bd1Label");
   const bd1Value   = $("bd1Value");
   const bd2Label   = $("bd2Label");
   const bd2Value   = $("bd2Value");
@@ -575,14 +581,14 @@
     if (plan > 0 && fact > 0) {
       const pct = Math.round(((fact - plan) / plan) * 100);
       if (fact > plan) return { cls: "pos", icon: "↑", text: `Факт выше плана на <strong>${fmtPct(pct)}</strong>` };
-      if (fact < plan) return { cls: "neg", icon: "↓", text: `Факт ниже плана на <strong>${fmtPct(pct)}</strong>` };
-      return { cls: "neu", icon: "→", text: "Прибыль соответствует плану" };
+      if (fact < plan) return { cls: "neg", icon: "↓", text: `Факт ниже плана на <strong>${Math.abs(pct)}%</strong>` };
+      return { cls: "neu", icon: "→", text: "Факт соответствует плану" };
     }
     if (plan < 0 && fact < 0) {
       const pct = Math.round(((fact - plan) / Math.abs(plan)) * 100);
-      if (fact > plan) return { cls: "pos", icon: "↑", text: `Фактический убыток меньше планового на <strong>${fmtPct(-pct)}</strong>` };
+      if (fact > plan) return { cls: "pos", icon: "↑", text: `Фактический убыток ниже планового на <strong>${Math.abs(pct)}%</strong>` };
       if (fact < plan) return { cls: "neg", icon: "↓", text: `Фактический убыток выше планового на <strong>${fmtPct(Math.abs(pct))}</strong>` };
-      return { cls: "neu", icon: "→", text: "Убыток соответствует плану" };
+      return { cls: "neu", icon: "→", text: "Фактический убыток соответствует плановому" };
     }
     if (plan < 0 && fact > 0) return { cls: "pos", icon: "↑", text: "Компания вышла из убытка в прибыль" };
     if (plan > 0 && fact < 0) return { cls: "neg", icon: "↓", text: "Компания перешла от прибыли к убытку" };
@@ -685,14 +691,8 @@
     arrowLabel.setAttribute("x", labelX);
     arrowLabel.setAttribute("y", labelY2);
     arrowLabel.setAttribute("fill", color);
-
-    const crossZero = (plan < 0 && fact > 0) || (plan > 0 && fact < 0);
-    if (crossZero) {
-      const totalPct = ((fact - plan) / Math.abs(plan)) * 100;
-      arrowLabel.textContent = fmtPct(totalPct);
-    } else {
-      arrowLabel.textContent = fmtPct(dev);
-    }
+    arrowLabel.textContent = fmtPct(dev);
+  
   }
 
   // ─── Render result ────────────────────────────────────────
@@ -702,27 +702,38 @@
     // KPI: plan
     kpiPlan.textContent = fmtV(plan);
     kpiPlan.className = "kpi-value populated";
-    kpiPlanSub.textContent = plan >= 0 ? "прибыль" : "убыток";
+    kpiPlanSub.textContent = plan > 0 ? "прибыль" : plan < 0 ? "убыток" : "ноль";
 
     // KPI: fact
     kpiFact.textContent = fmtV(fact);
     kpiFact.className = "kpi-value populated";
-    kpiFactSub.textContent = fact >= 0 ? "прибыль" : "убыток";
+    kpiFactSub.textContent = fact > 0 ? "прибыль" : fact < 0 ? "убыток" : "ноль";
 
     // KPI: deviation
-    if (plan === 0) {
-      kpiDev.textContent = "n/a";
-      kpiDev.className = "kpi-value";
-      kpiDevSub.textContent = "процент не рассчитывается";
-    } else {
-      const dev = ((fact - plan) / Math.abs(plan)) * 100;
-      const devRnd = Math.round(dev);
-      kpiDev.textContent = fmtPct(dev);
-      kpiDev.className = "kpi-value " + (devRnd > 0 ? "positive" : devRnd < 0 ? "negative" : "populated");
-      kpiDevSub.textContent = fact - plan >= 0
-        ? `+${fmtV(fact - plan)} абс.`
-        : `${fmtV(fact - plan)} абс.`;
-    }
+   if (plan === 0) {
+  kpiDev.textContent = "n/a";
+  kpiDev.className = "kpi-value";
+  kpiDevSub.textContent = "процент не рассчитывается";
+  kpiMethod.textContent = "План = 0";
+} else {
+  const dev = ((fact - plan) / Math.abs(plan)) * 100;
+  const devRnd = Math.round(dev);
+  const crossZero = (plan < 0 && fact > 0) || (plan > 0 && fact < 0);
+
+  kpiDev.textContent = fmtPct(dev);
+  kpiDev.className = "kpi-value " + (devRnd > 0 ? "positive" : devRnd < 0 ? "negative" : "populated");
+  kpiDevSub.textContent = fact - plan >= 0
+    ? `+${fmtV(fact - plan)} абс.`
+    : `${fmtV(fact - plan)} абс.`;
+
+  if (crossZero) {
+    kpiMethod.textContent = "Переход через ноль: нужна отдельная интерпретация";
+  } else if (plan < 0) {
+    kpiMethod.textContent = "Расчет через модуль планового значения";
+  } else {
+    kpiMethod.textContent = "Стандартная формула";
+  }
+}
 
     // Verdict
     const v = getVerdict(plan, fact);
@@ -734,7 +745,8 @@
     // Cross-zero breakdown
     const crossZero = (plan < 0 && fact > 0) || (plan > 0 && fact < 0);
     if (crossZero && plan !== 0) {
-      breakdown.className = "breakdown show";
+      breakdownPanel.style.display = "block";
+breakdown.className = "breakdown show";
       const extra = Math.round((Math.abs(fact) / Math.abs(plan)) * 100);
       if (plan < 0 && fact > 0) {
         bd1Label.textContent = "Закрыли убыток";
@@ -744,7 +756,7 @@
         bd2Value.textContent = `+${extra}%`;
         bd2Value.className = "bd-cell-value pos";
       } else {
-        bd1Label.textContent = "Потеряли прибыль";
+        bd1Label.textContent = "Потеряли плановую прибыль";
         bd1Value.textContent = "−100%";
         bd1Value.className = "bd-cell-value neg";
         bd2Label.textContent = "Ушли в убыток";
@@ -752,7 +764,8 @@
         bd2Value.className = "bd-cell-value neg";
       }
     } else {
-      breakdown.className = "breakdown";
+      breakdownPanel.style.display = "none";
+breakdown.className = "breakdown";
     }
 
     renderChart(plan, fact, true);
@@ -767,22 +780,41 @@
   }
 
   calcBtn.addEventListener("click", () => {
-    const { plan, fact, pr, fr } = parseInputs();
-    if (!pr || !fr)              { errorEl.textContent = "Введите план и факт."; return; }
-    if (plan === null || fact === null) { errorEl.textContent = "Используйте числовые значения."; return; }
-    renderResult(plan, fact);
-  });
+  const { plan, fact, pr, fr } = parseInputs();
+
+  if (!pr || !fr) {
+    errorEl.textContent = "Введите план и факт.";
+    kpiMethod.textContent = "";
+    return;
+  }
+
+  if (plan === null || fact === null) {
+    errorEl.textContent = "Используйте числовые значения.";
+    kpiMethod.textContent = "";
+    return;
+  }
+
+  renderResult(plan, fact);
+});
 
   [planInput, factInput].forEach(inp => {
     inp.addEventListener("input", () => {
       const { plan, fact, pr, fr } = parseInputs();
       errorEl.textContent = "";
       verdict.className = "verdict";
-      breakdown.className = "breakdown";
+      breakdownPanel.style.display = "none";
+breakdown.className = "breakdown";
       if (!pr && !fr) {
-        renderChart(0, 0, false);
-        return;
-      }
+  kpiPlan.textContent = "—";
+  kpiFact.textContent = "—";
+  kpiDev.textContent = "—";
+  kpiPlanSub.textContent = "";
+  kpiFactSub.textContent = "";
+  kpiDevSub.textContent = "";
+  kpiMethod.textContent = "";
+  renderChart(0, 0, false);
+  return;
+}
       const planPreview = (pr && plan !== null) ? plan : 0;
       const factPreview = (fr && fact !== null) ? fact : 0;
       renderChart(planPreview, factPreview, false);
