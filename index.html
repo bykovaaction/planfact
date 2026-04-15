@@ -547,8 +547,6 @@
   const guides     = $("guides");
   const barPlan    = $("barPlan");
   const barFact    = $("barFact");
-  const lblPlanName= $("lblPlanName");
-  const lblFactName= $("lblFactName");
   const lblPlanVal = $("lblPlanVal");
   const lblFactVal = $("lblFactVal");
   const arrowEl    = $("arrow");
@@ -651,9 +649,7 @@
     setBar(barFact, fact, xFactC);
 
     // name labels
-    const nameY = clamp(zeroY - 18, yT + 14, yB - 12);
-    lblPlanName.setAttribute("x", xPlanC); lblPlanName.setAttribute("y", nameY);
-    lblFactName.setAttribute("x", xFactC); lblFactName.setAttribute("y", nameY);
+   
 
     // value labels
     const planValY = clamp(planY + (plan >= 0 ? -10 : 18), yT + 14, yB - 5);
