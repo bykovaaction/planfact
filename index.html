@@ -1,0 +1,802 @@
+
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>План / Факт — Отклонение</title>
+  <style>
+    :root {
+      --bg:       #ffffff;
+      --surface:  #ffffff;
+      --panel:    #ffffff;
+      --border:   #e2e8f0;
+      --border2:  #d6deea;
+      --text:     #111827;
+      --muted:    #64748b;
+      --dim:      #94a3b8;
+      --gold:     #111827;
+      --gold-dim: #111827;
+      --green:    #3dba82;
+      --red:      #e05252;
+      --green-dim:#e8f8f0;
+      --red-dim:  #fdecec;
+      --mono: "Intel One Mono", "IntelOne Mono", "Intel One Display", "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+      --serif: "Intel One Display", "Intel One Text", "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--mono);
+      min-height: 100vh;
+      padding: 0;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before { display: none; }
+
+    .shell {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 48px 24px 64px;
+    }
+
+    /* ── Header ── */
+    header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 48px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-left {}
+
+    .eyebrow {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .eyebrow::before {
+      content: "";
+      display: inline-block;
+      width: 18px;
+      height: 1px;
+      background: var(--gold);
+    }
+
+    h1 {
+      font-family: var(--serif);
+      font-size: clamp(1.5rem, 1.1rem + 1.5vw, 2.1rem);
+      font-weight: 700;
+      line-height: 1.22;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      max-width: 560px;
+    }
+
+
+    /* ── Layout ── */
+    .layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    /* ── Panel base ── */
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      position: relative;
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: #e2e8f0;
+      border-radius: 4px 4px 0 0;
+    }
+
+    .panel-head {
+      padding: 14px 18px 10px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.65rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ── Input panel ── */
+    .input-panel { padding: 20px 18px 22px; }
+
+    .field { margin-bottom: 16px; }
+    .field:last-of-type { margin-bottom: 0; }
+
+    .field label {
+      display: block;
+      font-size: 0.63rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      height: 44px;
+      background: var(--panel);
+      border: 1px solid var(--border2);
+      border-radius: 3px;
+      padding: 0 14px;
+      font-family: var(--mono);
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: border-color 0.15s, box-shadow 0.15s;
+      -webkit-appearance: none;
+    }
+
+    input[type="text"]::placeholder { color: var(--dim); font-weight: 300; }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--gold-dim);
+      box-shadow: 0 0 0 3px rgba(201,168,76,0.08);
+    }
+
+    .btn {
+      width: 100%;
+      height: 44px;
+      margin-top: 20px;
+      background: #111827;
+      border: 1px solid #111827;
+      border-radius: 3px;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #ffffff;
+      cursor: pointer;
+      transition: none;
+    }
+
+    .btn::before { display: none; }
+    .btn span { position: static; z-index: auto; }
+    .btn:hover { background: #111827; color: #ffffff; }
+    .btn:active { opacity: 1; }
+
+    .error-msg {
+      margin-top: 10px;
+      min-height: 18px;
+      font-size: 0.72rem;
+      color: var(--red);
+      letter-spacing: 0.04em;
+    }
+
+    /* ── Right column ── */
+    .right-col {
+      display: grid;
+      gap: 16px;
+    }
+
+    /* ── KPI strip ── */
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .kpi-strip::before { display: none; }
+
+    .kpi {
+      background: var(--surface);
+      padding: 16px 18px 18px;
+      position: relative;
+    }
+
+    .kpi-label {
+      font-size: 0.62rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .kpi-value {
+      font-family: var(--mono);
+      font-size: 1.55rem;
+      font-weight: 500;
+      line-height: 1;
+      color: var(--dim);
+      transition: color 0.3s;
+      letter-spacing: -0.02em;
+    }
+
+    .kpi-value.populated { color: var(--text); }
+    .kpi-value.positive  { color: var(--green); }
+    .kpi-value.negative  { color: var(--red); }
+
+    .kpi-sub {
+      font-size: 0.68rem;
+      color: var(--muted);
+      margin-top: 6px;
+      min-height: 14px;
+      transition: color 0.3s;
+    }
+
+    /* ── Verdict banner ── */
+    .verdict {
+      padding: 16px 20px;
+      display: none;
+      align-items: center;
+      gap: 14px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      animation: fadeUp 0.25s ease;
+    }
+
+    .verdict.show { display: flex; }
+
+    .verdict-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .verdict-icon.pos { background: var(--green-dim); color: var(--green); }
+    .verdict-icon.neg { background: var(--red-dim);   color: var(--red);   }
+    .verdict-icon.neu { background: var(--panel);      color: var(--muted); }
+
+    .verdict-text {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 1.05rem;
+      line-height: 1.35;
+      color: var(--text);
+    }
+
+    .verdict-text strong {
+      font-style: normal;
+      font-weight: 700;
+    }
+
+    /* ── Breakdown ── */
+    .breakdown {
+      display: none;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .breakdown.show { display: grid; grid-template-columns: 1fr 1fr; }
+    .breakdown::before { display: none; }
+
+    .bd-cell {
+      background: var(--surface);
+      padding: 14px 18px 16px;
+    }
+
+    .bd-cell-label {
+      font-size: 0.62rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .bd-cell-value {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .bd-cell-value.pos { color: var(--green); }
+    .bd-cell-value.neg { color: var(--red); }
+
+    /* ── Chart panel ── */
+    .chart-panel {}
+
+    .chart-body {
+      padding: 16px 12px 10px;
+    }
+
+    .chart-svg-wrap {
+      width: 100%;
+      overflow: hidden;
+      border-radius: 2px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+    }
+
+    .chart-svg-wrap svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    /* ── Axis labels ── */
+    .chart-axis-labels {
+      position: relative;
+      height: 24px;
+      padding: 8px 0 4px;
+      font-size: 0.68rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .chart-axis-labels span {
+      position: absolute;
+      transform: translateX(-50%);
+      white-space: nowrap;
+    }
+
+    .chart-axis-labels span:first-child { left: 27.2%; }
+    .chart-axis-labels span:last-child  { left: 58.1%; }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes countUp {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 680px) {
+      .shell { padding: 28px 16px 48px; }
+      header { flex-direction: column; gap: 12px; }
+      .layout { grid-template-columns: 1fr; }
+      .kpi-strip { grid-template-columns: 1fr; }
+      .breakdown.show { grid-template-columns: 1fr; }
+      h1 { font-size: 1.45rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="shell">
+
+  <header>
+    <div class="header-left">
+      <div class="eyebrow">Финансовый анализ</div>
+      <h1>Отклонение план-факт по финансовому результату: проверьте на своих данных</h1>
+    </div>
+  </header>
+
+  <div class="layout">
+
+    <!-- Left: inputs -->
+    <aside>
+      <div class="panel">
+        <div class="panel-head">Исходные данные</div>
+        <div class="input-panel">
+          <div class="field">
+            <label for="plan">Плановый показатель</label>
+            <div class="input-wrap">
+              <input id="plan" type="text" inputmode="decimal" placeholder="0" autocomplete="off">
+            </div>
+          </div>
+          <div class="field">
+            <label for="fact">Фактический результат</label>
+            <div class="input-wrap">
+              <input id="fact" type="text" inputmode="decimal" placeholder="0" autocomplete="off">
+            </div>
+          </div>
+          <button class="btn" id="calcBtn" type="button"><span>Рассчитать отклонение</span></button>
+          <div class="error-msg" id="error"></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Right: output -->
+    <div class="right-col">
+
+      <!-- KPI strip -->
+      <div class="kpi-strip panel">
+        <div class="kpi">
+          <div class="kpi-label">План</div>
+          <div class="kpi-value" id="kpiPlan">—</div>
+          <div class="kpi-sub" id="kpiPlanSub"></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Факт</div>
+          <div class="kpi-value" id="kpiFact">—</div>
+          <div class="kpi-sub" id="kpiFactSub"></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Отклонение</div>
+          <div class="kpi-value" id="kpiDev">—</div>
+          <div class="kpi-sub" id="kpiDevSub"></div>
+        </div>
+      </div>
+
+      <!-- Verdict -->
+      <div class="verdict" id="verdict">
+        <div class="verdict-icon" id="verdictIcon">→</div>
+        <div class="verdict-text" id="verdictText"></div>
+      </div>
+
+      <!-- Breakdown (cross-zero) -->
+      <div class="breakdown" id="breakdown">
+        <div class="bd-cell">
+          <div class="bd-cell-label" id="bd1Label"></div>
+          <div class="bd-cell-value" id="bd1Value"></div>
+        </div>
+        <div class="bd-cell">
+          <div class="bd-cell-label" id="bd2Label"></div>
+          <div class="bd-cell-value" id="bd2Value"></div>
+        </div>
+      </div>
+
+      <!-- Chart -->
+      <div class="panel chart-panel">
+        <div class="panel-head">Визуализация план / факт</div>
+        <div class="chart-body">
+          <div class="chart-svg-wrap">
+            <svg id="chartSvg" viewBox="0 0 680 280" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <marker id="mNeutral" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                  <path d="M0,0 L0,6 L7,3 z" fill="#0f172a"/>
+                </marker>
+                <marker id="mPos" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                  <path d="M0,0 L0,6 L7,3 z" fill="#3dba82"/>
+                </marker>
+                <marker id="mNeg" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                  <path d="M0,0 L0,6 L7,3 z" fill="#e05252"/>
+                </marker>
+              </defs>
+
+              <!-- axes -->
+              <line id="yAxis" x1="60" y1="260" x2="60" y2="12" stroke="#3a3f52" stroke-width="1" marker-end="url(#mNeutral)"/>
+              <line id="xAxis" x1="60" y1="140" x2="650" y2="140" stroke="#3a3f52" stroke-width="1" marker-end="url(#mNeutral)"/>
+              <text id="lblZero" x="46" y="144" text-anchor="end" font-family="Intel One Mono, Segoe UI, sans-serif" font-size="11" fill="#64748b">0</text>
+
+              <!-- guide lines -->
+              <g id="guides"></g>
+
+              <!-- bars -->
+              <rect id="barPlan" x="150" y="140" width="70" height="0" fill="#94a3b8" rx="1"/>
+              <rect id="barFact" x="360" y="140" width="70" height="0" fill="#94a3b8" rx="1"/>
+
+              <!-- bar labels -->
+              <text id="lblPlanName" x="185" y="30" text-anchor="middle" font-family="Intel One Mono, Segoe UI, sans-serif" font-size="11" letter-spacing="2" fill="#3a3f52" text-transform="uppercase">ПЛАН</text>
+              <text id="lblFactName" x="395" y="30" text-anchor="middle" font-family="Intel One Mono, Segoe UI, sans-serif" font-size="11" letter-spacing="2" fill="#3a3f52">ФАКТ</text>
+
+              <text id="lblPlanVal" x="185" y="30" text-anchor="middle" font-family="Intel One Mono, Segoe UI, sans-serif" font-size="13" font-weight="500" fill="#111827"/>
+              <text id="lblFactVal" x="395" y="30" text-anchor="middle" font-family="Intel One Mono, Segoe UI, sans-serif" font-size="13" font-weight="500" fill="#111827"/>
+
+              <!-- arrow -->
+              <path id="arrow" d="" fill="none" stroke="#334155" stroke-width="1.2" stroke-dasharray="3 6" marker-end="url(#mNeutral)"/>
+              <text id="arrowLabel" x="490" y="130" font-family="Intel One Mono, Segoe UI, sans-serif" font-size="22" font-weight="500" fill="#111827" text-anchor="start"/>
+            </svg>
+          </div>
+          <div class="chart-axis-labels">
+            <span>Плановый период</span>
+            <span>Фактический результат</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /right-col -->
+  </div><!-- /layout -->
+</div><!-- /shell -->
+
+<script>
+  const $ = id => document.getElementById(id);
+
+  // DOM refs
+  const planInput  = $("plan");
+  const factInput  = $("fact");
+  const calcBtn    = $("calcBtn");
+  const errorEl    = $("error");
+  const kpiPlan    = $("kpiPlan");
+  const kpiFact    = $("kpiFact");
+  const kpiDev     = $("kpiDev");
+  const kpiPlanSub = $("kpiPlanSub");
+  const kpiFactSub = $("kpiFactSub");
+  const kpiDevSub  = $("kpiDevSub");
+  const verdict    = $("verdict");
+  const verdictIcon= $("verdictIcon");
+  const verdictText= $("verdictText");
+  const breakdown  = $("breakdown");
+  const bd1Label   = $("bd1Label");
+  const bd1Value   = $("bd1Value");
+  const bd2Label   = $("bd2Label");
+  const bd2Value   = $("bd2Value");
+
+  // SVG refs
+  const yAxis      = $("yAxis");
+  const xAxis      = $("xAxis");
+  const lblZero    = $("lblZero");
+  const guides     = $("guides");
+  const barPlan    = $("barPlan");
+  const barFact    = $("barFact");
+  const lblPlanName= $("lblPlanName");
+  const lblFactName= $("lblFactName");
+  const lblPlanVal = $("lblPlanVal");
+  const lblFactVal = $("lblFactVal");
+  const arrowEl    = $("arrow");
+  const arrowLabel = $("arrowLabel");
+
+  // ─── Helpers ──────────────────────────────────────────────
+  const sanitize = v => v.replace(/\s+/g, "").replace(",", ".");
+  const toNum    = v => { if (!v) return null; const n = Number(v); return isFinite(n) ? n : null; };
+  const fmtV     = v => Number.isInteger(v) ? String(v) : v.toFixed(2).replace(/\.?0+$/, "");
+  const fmtPct   = n => { const r = Math.round(n); return (r > 0 ? "+" : "") + r + "%"; };
+  const clamp    = (n, a, b) => Math.max(a, Math.min(b, n));
+
+  function svgEl(tag, attrs) {
+    const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+    Object.entries(attrs).forEach(([k,v]) => el.setAttribute(k, v));
+    return el;
+  }
+
+  // ─── Interpretation ───────────────────────────────────────
+  function getVerdict(plan, fact) {
+    if (plan === 0) {
+      if (fact === 0) return { cls: "neu", icon: "→", text: "Результат совпал с планом. Отклонение равно нулю." };
+      if (fact > 0)  return { cls: "pos", icon: "↑", text: "Получена прибыль при нулевом плане." };
+      return { cls: "neg", icon: "↓", text: "Получен убыток при нулевом плане." };
+    }
+    if (plan > 0 && fact > 0) {
+      const pct = Math.round(((fact - plan) / plan) * 100);
+      if (fact > plan) return { cls: "pos", icon: "↑", text: `Прибыль превысила план на <strong>${fmtPct(pct)}</strong>. Результат лучше ожидаемого.` };
+      if (fact < plan) return { cls: "neg", icon: "↓", text: `Прибыль не достигла плана — отставание <strong>${fmtPct(pct)}</strong>. Требуется анализ причин.` };
+      return { cls: "neu", icon: "→", text: "Прибыль строго соответствует плану." };
+    }
+    if (plan < 0 && fact < 0) {
+      const pct = Math.round(((fact - plan) / Math.abs(plan)) * 100);
+      if (fact > plan) return { cls: "pos", icon: "↑", text: `Убыток оказался меньше планового на <strong>${fmtPct(-pct)}</strong>. Потери сдержаны.` };
+      if (fact < plan) return { cls: "neg", icon: "↓", text: `Убыток превысил план на <strong>${fmtPct(Math.abs(pct))}</strong>. Ситуация хуже ожидаемой.` };
+      return { cls: "neu", icon: "→", text: "Убыток соответствует плановой отметке." };
+    }
+    if (plan < 0 && fact > 0) return { cls: "pos", icon: "↑", text: "Компания вышла из убытка в прибыль. Знаковый перелом." };
+    if (plan > 0 && fact < 0) return { cls: "neg", icon: "↓", text: "Компания сменила прибыль на убыток. Требуется немедленный разбор." };
+    return { cls: "neu", icon: "→", text: "Нет изменений." };
+  }
+
+  // ─── Chart ────────────────────────────────────────────────
+  function renderChart(plan, fact, annotate) {
+    const W = 680, H = 280;
+    const xL = 60, xR = 640, yT = 18, yB = 260;
+    const xPlanC = 185, xFactC = 395, bW = 70;
+
+    const vals    = [0, plan, fact];
+    const dMin    = Math.min(...vals), dMax = Math.max(...vals);
+    const range   = Math.max(1, dMax - dMin);
+    const pad     = range * 0.20;
+    const vMin    = dMin - pad, vMax = dMax + pad;
+    const plotH   = yB - yT;
+    const mapY    = v => yT + ((vMax - v) / (vMax - vMin)) * plotH;
+    const zeroY   = mapY(0);
+    const planY   = mapY(plan);
+    const factY   = mapY(fact);
+
+    // axes
+    yAxis.setAttribute("y1", yB); yAxis.setAttribute("y2", yT);
+    xAxis.setAttribute("y1", zeroY); xAxis.setAttribute("y2", zeroY);
+    lblZero.setAttribute("y", clamp(zeroY + 4, yT + 12, yB - 6));
+
+    // guides
+    guides.innerHTML = "";
+    [plan, fact].filter((v,i,a) => a.indexOf(v) === i && v !== 0).forEach(v => {
+      const gy = mapY(v);
+      guides.appendChild(svgEl("line", {
+        x1: xL, y1: gy.toFixed(1), x2: xR, y2: gy.toFixed(1),
+        stroke: "#d7dee8", "stroke-width": 1, "stroke-dasharray": "4 5"
+      }));
+      const t = svgEl("text", {
+        x: 46, y: clamp(gy + 4, yT + 12, yB - 5),
+        "text-anchor": "end", "font-size": 11, fill: "#9aa8ba",
+        "font-family": "Intel One Mono, Segoe UI, sans-serif"
+      });
+      t.textContent = fmtV(v);
+      guides.appendChild(t);
+    });
+
+    // bars
+    function setBar(el, val, cx) {
+      const y = mapY(val);
+      const top = Math.min(zeroY, y);
+      const h   = Math.max(0, Math.abs(zeroY - y));
+      el.setAttribute("x", cx - bW / 2);
+      el.setAttribute("y", top.toFixed(1));
+      el.setAttribute("height", h.toFixed(1));
+      if (val > 0) {
+        el.setAttribute("fill", "#9fdac0");
+      } else if (val < 0) {
+        el.setAttribute("fill", "#f2b0b0");
+      } else {
+        el.setAttribute("fill", "#94a3b8");
+      }
+    }
+
+    setBar(barPlan, plan, xPlanC);
+    setBar(barFact, fact, xFactC);
+
+    // name labels
+    const nameY = clamp(zeroY - 18, yT + 14, yB - 12);
+    lblPlanName.setAttribute("x", xPlanC); lblPlanName.setAttribute("y", nameY);
+    lblFactName.setAttribute("x", xFactC); lblFactName.setAttribute("y", nameY);
+
+    // value labels
+    const planValY = clamp(planY + (plan >= 0 ? -10 : 18), yT + 14, yB - 5);
+    const factValY = clamp(factY + (fact >= 0 ? -10 : 18), yT + 14, yB - 5);
+    lblPlanVal.setAttribute("x", xPlanC); lblPlanVal.setAttribute("y", planValY);
+    lblFactVal.setAttribute("x", xFactC); lblFactVal.setAttribute("y", factValY);
+    lblPlanVal.textContent = annotate ? fmtV(plan) : "";
+    lblFactVal.textContent = annotate ? fmtV(fact) : "";
+
+    // arrow
+    if (!annotate || plan === 0) {
+      arrowEl.setAttribute("d", ""); arrowLabel.textContent = ""; return;
+    }
+
+    const midX = (xPlanC + xFactC) / 2;
+    const dy   = factY - planY;
+    const cpY  = dy < 0 ? Math.max(planY, factY) + 40 : Math.min(planY, factY) - 40;
+    arrowEl.setAttribute("d", `M ${xPlanC} ${planY.toFixed(1)} Q ${midX} ${cpY.toFixed(1)} ${xFactC} ${factY.toFixed(1)}`);
+
+    const dev = ((fact - plan) / Math.abs(plan)) * 100;
+    const devRnd = Math.round(dev);
+    const color  = devRnd > 0 ? "#3dba82" : devRnd < 0 ? "#e05252" : "#64748b";
+
+    arrowEl.setAttribute("stroke", "#334155");
+    arrowEl.setAttribute("stroke-width", "1.2");
+    arrowEl.setAttribute("stroke-dasharray", "3 6");
+    arrowEl.setAttribute("marker-end", "url(#mNeutral)");
+    arrowEl.setAttribute("stroke-linecap", "round");
+
+    const labelX = xFactC + 46;
+    const labelY2 = clamp((planY + factY) / 2, yT + 18, yB - 16);
+
+    arrowLabel.setAttribute("x", labelX);
+    arrowLabel.setAttribute("y", labelY2);
+    arrowLabel.setAttribute("fill", color);
+
+    const crossZero = (plan < 0 && fact > 0) || (plan > 0 && fact < 0);
+    if (crossZero) {
+      const totalPct = ((fact - plan) / Math.abs(plan)) * 100;
+      arrowLabel.textContent = fmtPct(totalPct);
+    } else {
+      arrowLabel.textContent = fmtPct(dev);
+    }
+  }
+
+  // ─── Render result ────────────────────────────────────────
+  function renderResult(plan, fact) {
+    errorEl.textContent = "";
+
+    // KPI: plan
+    kpiPlan.textContent = fmtV(plan);
+    kpiPlan.className = "kpi-value populated";
+    kpiPlanSub.textContent = plan >= 0 ? "прибыль" : "убыток";
+
+    // KPI: fact
+    kpiFact.textContent = fmtV(fact);
+    kpiFact.className = "kpi-value populated";
+    kpiFactSub.textContent = fact >= 0 ? "прибыль" : "убыток";
+
+    // KPI: deviation
+    if (plan === 0) {
+      kpiDev.textContent = "n/a";
+      kpiDev.className = "kpi-value";
+      kpiDevSub.textContent = "план = 0";
+    } else {
+      const dev = ((fact - plan) / Math.abs(plan)) * 100;
+      const devRnd = Math.round(dev);
+      kpiDev.textContent = fmtPct(dev);
+      kpiDev.className = "kpi-value " + (devRnd > 0 ? "positive" : devRnd < 0 ? "negative" : "populated");
+      kpiDevSub.textContent = fact - plan >= 0
+        ? `+${fmtV(fact - plan)} абс.`
+        : `${fmtV(fact - plan)} абс.`;
+    }
+
+    // Verdict
+    const v = getVerdict(plan, fact);
+    verdict.className = "verdict show";
+    verdictIcon.className = "verdict-icon " + v.cls;
+    verdictIcon.textContent = v.icon;
+    verdictText.innerHTML = v.text;
+
+    // Cross-zero breakdown
+    const crossZero = (plan < 0 && fact > 0) || (plan > 0 && fact < 0);
+    if (crossZero && plan !== 0) {
+      breakdown.className = "breakdown show";
+      const extra = Math.round((Math.abs(fact) / Math.abs(plan)) * 100);
+      if (plan < 0 && fact > 0) {
+        bd1Label.textContent = "Покрытие убытка";
+        bd1Value.textContent = "100%";
+        bd1Value.className = "bd-cell-value pos";
+        bd2Label.textContent = "Сверх нулевой отметки";
+        bd2Value.textContent = `+${extra}%`;
+        bd2Value.className = "bd-cell-value pos";
+      } else {
+        bd1Label.textContent = "Потеря прибыли";
+        bd1Value.textContent = "−100%";
+        bd1Value.className = "bd-cell-value neg";
+        bd2Label.textContent = "Уход в убыток";
+        bd2Value.textContent = `−${extra}%`;
+        bd2Value.className = "bd-cell-value neg";
+      }
+    } else {
+      breakdown.className = "breakdown";
+    }
+
+    renderChart(plan, fact, true);
+  }
+
+  // ─── Input handling ────────────────────────────────────────
+  function parseInputs() {
+    const pr = sanitize(planInput.value);
+    const fr = sanitize(factInput.value);
+    planInput.value = pr; factInput.value = fr;
+    return { plan: toNum(pr), fact: toNum(fr), pr, fr };
+  }
+
+  calcBtn.addEventListener("click", () => {
+    const { plan, fact, pr, fr } = parseInputs();
+    if (!pr || !fr)              { errorEl.textContent = "Введите план и факт."; return; }
+    if (plan === null || fact === null) { errorEl.textContent = "Используйте числовые значения."; return; }
+    renderResult(plan, fact);
+  });
+
+  [planInput, factInput].forEach(inp => {
+    inp.addEventListener("input", () => {
+      const { plan, fact, pr, fr } = parseInputs();
+      errorEl.textContent = "";
+      verdict.className = "verdict";
+      breakdown.className = "breakdown";
+      if (!pr && !fr) {
+        renderChart(0, 0, false);
+        return;
+      }
+      const planPreview = (pr && plan !== null) ? plan : 0;
+      const factPreview = (fr && fact !== null) ? fact : 0;
+      renderChart(planPreview, factPreview, false);
+    });
+  });
+
+  // initial empty chart
+  renderChart(0, 0, false);
+</script>
+</body>
+</html>
