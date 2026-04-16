@@ -20,9 +20,15 @@
       --red:      #e05252;
       --green-dim:#e8f8f0;
       --red-dim:  #fdecec;
-      --mono: "Intel One Mono", "IntelOne Mono", "Intel One Display", "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-      --serif: "Intel One Display", "Intel One Text", "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+      --mono: var(--intel-font);
+      --serif: var(--intel-font);
+      --intel-font: "Intel One Display", "Intel One Mono", sans-serif;
+
     }
+    
+    html, body, input, button, textarea, select, svg text {
+  font-family: var(--intel-font) !important;
+}
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -41,7 +47,8 @@
     .shell {
       position: relative;
       z-index: 1;
-      max-width: 1100px;
+      max-width: none;
+      width: 100%;
       margin: 0 auto;
       padding: 48px 24px 64px;
     }
@@ -57,7 +64,9 @@
       border-bottom: 1px solid var(--border);
     }
 
-    .header-left {}
+    .header-left {
+  width: 100%;
+}
 
     .eyebrow {
       font-family: var(--mono);
@@ -80,20 +89,22 @@
     }
 
     h1 {
-      font-family: var(--serif);
-      font-size: clamp(1.5rem, 1.1rem + 1.5vw, 2.1rem);
-      font-weight: 700;
-      line-height: 1.22;
-      letter-spacing: -0.01em;
-      color: var(--text);
-      max-width: 560px;
-    }
+  font-family: var(--serif);
+  font-size: clamp(2.2rem, 1.4rem + 2.8vw, 3.6rem);
+  font-weight: 700;
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  max-width: none;
+  width: 100%;
+}
 .header-subtitle {
   margin-top: 12px;
-  max-width: 640px;
   font-size: 17px;
   line-height: 1.5;
   color: var(--muted);
+  max-width: none;
+  width: 100%;
 }
 
 
