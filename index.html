@@ -16,16 +16,16 @@
       --dim:      #94a3b8;
       --gold:     #111827;
       --gold-dim: #111827;
-      --green:    #3dba82;
-      --red:      #e05252;
-      --green-dim:#e8f8f0;
-      --red-dim:  #fdecec;
+      --green:    #6FA787;
+      --red:      #B06A7A;
+      --green-dim:#EDF5F0;
+      --red-dim:  #F7EEF1;
       --demo-text: #7f8da3;
       --demo-muted: #8d99ab;
-      --demo-green: #87b79d;
-      --demo-red: #cc9a9a;
-      --demo-green-dim: #eef7f2;
-      --demo-red-dim: #f9eeee;
+      --demo-green: #8FB39F;
+      --demo-red: #BE9AA5;
+      --demo-green-dim: #EEF4F1;
+      --demo-red-dim: #F5EDF0;
       --font-main: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", sans-serif;
       --mono: var(--font-main);
       --serif: var(--font-main);
@@ -551,10 +551,10 @@
                 <path d="M0,0 L0,6 L7,3 z" fill="#0f172a"/>
               </marker>
               <marker id="mPos" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-                <path d="M0,0 L0,6 L7,3 z" fill="#3dba82"/>
+                <path d="M0,0 L0,6 L7,3 z" fill="#6FA787"/>
               </marker>
               <marker id="mNeg" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-                <path d="M0,0 L0,6 L7,3 z" fill="#e05252"/>
+                <path d="M0,0 L0,6 L7,3 z" fill="#B06A7A"/>
               </marker>
             </defs>
 
@@ -714,9 +714,9 @@ const bd1Label   = $("bd1Label");
       el.setAttribute("y", top.toFixed(1));
       el.setAttribute("height", h.toFixed(1));
       if (val > 0) {
-        el.setAttribute("fill", demo ? "#bfd6c8" : "#9fdac0");
+        el.setAttribute("fill", demo ? "#C4D8CC" : "#AFCBBB");
       } else if (val < 0) {
-        el.setAttribute("fill", demo ? "#e2c3c3" : "#f2b0b0");
+        el.setAttribute("fill", demo ? "#D9C3CA" : "#D8B5C0");
       } else {
         el.setAttribute("fill", demo ? "#b5c0d0" : "#94a3b8");
       }
@@ -749,9 +749,9 @@ const bd1Label   = $("bd1Label");
     const dev = ((fact - plan) / Math.abs(plan)) * 100;
     const devRnd = Math.round(dev);
     const color  = devRnd > 0
-      ? (demo ? "#87b79d" : "#3dba82")
+      ? (demo ? "#8FB39F" : "#6FA787")
       : devRnd < 0
-        ? (demo ? "#cc9a9a" : "#e05252")
+        ? (demo ? "#BE9AA5" : "#B06A7A")
         : (demo ? "#8d99ab" : "#64748b");
 
     arrowEl.setAttribute("stroke", "#334155");
