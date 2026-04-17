@@ -134,7 +134,15 @@
     }
 
     /* ── Input panel ── */
-    .input-panel { padding: 20px 18px 22px; }
+    .input-panel {
+      padding: 20px 18px 22px;
+      background: rgba(111, 67, 137, 0.24);
+      border-radius: 14px;
+    }
+
+    .input-panel-head {
+      font-weight: 700;
+    }
 
     .field { margin-bottom: 16px; }
     .field:last-of-type { margin-bottom: 0; }
@@ -447,7 +455,7 @@
     <!-- Left: inputs -->
     <aside>
       <div class="panel">
-        <div class="panel-head">Введите исходные данные</div>
+        <div class="panel-head input-panel-head">Введите исходные данные</div>
         <div class="input-panel">
           <div class="field">
             <label for="plan">План</label>
