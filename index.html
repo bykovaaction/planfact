@@ -120,6 +120,7 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
+      overflow: hidden; /* чтобы фон внутреннего блока не срезал нижние углы */
       position: relative;
     }
 
@@ -138,7 +139,7 @@
     .input-panel {
       padding: 20px 18px 22px;
       background: rgba(111, 67, 137, 0.16);
-      border-radius: 0px;
+      border-radius: 0 0 var(--radius-lg) var(--radius-lg); /* нижние углы как у карточки */
     }
 
     .input-panel-head {
