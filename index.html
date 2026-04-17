@@ -120,7 +120,7 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      overflow: hidden; /* чтобы фон внутреннего блока не срезал нижние углы */
+      overflow: hidden;
       position: relative;
     }
 
@@ -136,10 +136,19 @@
     }
 
     /* ── Input panel ── */
-    .input-panel {
+    .input-fields {
       padding: 20px 18px 22px;
       background: rgba(111, 67, 137, 0.16);
-      border-radius: 0 0 var(--radius-lg) var(--radius-lg); /* нижние углы как у карточки */
+    }
+
+    .input-actions {
+      padding: 18px;
+      background: #ffffff;
+      border-top: 1px solid rgba(17, 24, 39, 0.08);
+    }
+
+    .input-actions .btn:first-child {
+      margin-top: 0;
     }
 
     .input-panel-head {
@@ -466,7 +475,7 @@ header {
     <aside>
       <div class="panel">
         <div class="panel-head input-panel-head">Введите исходные данные</div>
-        <div class="input-panel">
+        <div class="input-fields">
           <div class="field">
             <label for="plan">План</label>
             <div class="input-wrap">
@@ -479,6 +488,8 @@ header {
               <input id="fact" type="text" inputmode="decimal" placeholder="50" autocomplete="off">
             </div>
           </div>
+        </div>
+        <div class="input-actions">
           <button class="btn" id="calcBtn" type="button"><span>Рассчитать отклонение</span></button>
           <button class="btn btn-secondary" id="clearBtn" type="button"><span>Очистить</span></button>
           <div class="error-msg" id="error"></div>
