@@ -375,7 +375,9 @@
     .bd-cell-value.neg { color: var(--red); }
 
     /* ── Chart panel ── */
-    .chart-panel {}
+    .chart-panel {
+      grid-column: 1 / -1;
+    }
 
     .chart-body {
       padding: 16px 12px 10px;
@@ -537,55 +539,54 @@
         </div>
     </div>
 
-      <!-- Chart -->
-      <div class="panel chart-panel">
-        <div class="panel-head">Диаграмма план / факт</div>
-        <div class="chart-body">
-          <div class="chart-svg-wrap">
-            <svg id="chartSvg" viewBox="0 0 680 280" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <marker id="mNeutral" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-                  <path d="M0,0 L0,6 L7,3 z" fill="#0f172a"/>
-                </marker>
-                <marker id="mPos" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-                  <path d="M0,0 L0,6 L7,3 z" fill="#3dba82"/>
-                </marker>
-                <marker id="mNeg" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-                  <path d="M0,0 L0,6 L7,3 z" fill="#e05252"/>
-                </marker>
-              </defs>
+    </div><!-- /right-col -->
+    <!-- Chart -->
+    <div class="panel chart-panel">
+      <div class="panel-head">Диаграмма план / факт</div>
+      <div class="chart-body">
+        <div class="chart-svg-wrap">
+          <svg id="chartSvg" viewBox="0 0 680 280" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <marker id="mNeutral" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L7,3 z" fill="#0f172a"/>
+              </marker>
+              <marker id="mPos" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L7,3 z" fill="#3dba82"/>
+              </marker>
+              <marker id="mNeg" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L7,3 z" fill="#e05252"/>
+              </marker>
+            </defs>
 
-              <!-- axes -->
-              <line id="yAxis" x1="60" y1="260" x2="60" y2="12" stroke="#3a3f52" stroke-width="1" marker-end="url(#mNeutral)"/>
-              <line id="xAxis" x1="60" y1="140" x2="650" y2="140" stroke="#3a3f52" stroke-width="1" marker-end="url(#mNeutral)"/>
-              <text id="lblZero" x="46" y="144" text-anchor="end" font-family="Intel One Mono, Segoe UI, sans-serif" font-size="11" fill="#64748b">0</text>
+            <!-- axes -->
+            <line id="yAxis" x1="60" y1="260" x2="60" y2="12" stroke="#3a3f52" stroke-width="1" marker-end="url(#mNeutral)"/>
+            <line id="xAxis" x1="60" y1="140" x2="650" y2="140" stroke="#3a3f52" stroke-width="1" marker-end="url(#mNeutral)"/>
+            <text id="lblZero" x="46" y="144" text-anchor="end" font-family="Intel One Mono, Segoe UI, sans-serif" font-size="11" fill="#64748b">0</text>
 
-              <!-- guide lines -->
-              <g id="guides"></g>
+            <!-- guide lines -->
+            <g id="guides"></g>
 
-              <!-- bars -->
-              <rect id="barPlan" x="150" y="140" width="70" height="0" fill="#94a3b8" rx="1"/>
-              <rect id="barFact" x="360" y="140" width="70" height="0" fill="#94a3b8" rx="1"/>
+            <!-- bars -->
+            <rect id="barPlan" x="150" y="140" width="70" height="0" fill="#94a3b8" rx="1"/>
+            <rect id="barFact" x="360" y="140" width="70" height="0" fill="#94a3b8" rx="1"/>
 
-              <!-- bar labels -->
-              
+            <!-- bar labels -->
+            
 
-              <text id="lblPlanVal" x="185" y="30" text-anchor="middle" font-family="Intel One Mono, Segoe UI, sans-serif" font-size="13" font-weight="500" fill="#111827"/>
-              <text id="lblFactVal" x="395" y="30" text-anchor="middle" font-family="Intel One Mono, Segoe UI, sans-serif" font-size="13" font-weight="500" fill="#111827"/>
+            <text id="lblPlanVal" x="185" y="30" text-anchor="middle" font-family="Intel One Mono, Segoe UI, sans-serif" font-size="13" font-weight="500" fill="#111827"/>
+            <text id="lblFactVal" x="395" y="30" text-anchor="middle" font-family="Intel One Mono, Segoe UI, sans-serif" font-size="13" font-weight="500" fill="#111827"/>
 
-              <!-- arrow -->
-              <path id="arrow" d="" fill="none" stroke="#334155" stroke-width="1.2" stroke-dasharray="3 6" marker-end="url(#mNeutral)"/>
-              <text id="arrowLabel" x="490" y="130" font-family="Intel One Mono, Segoe UI, sans-serif" font-size="22" font-weight="500" fill="#111827" text-anchor="start"/>
-            </svg>
-          </div>
-          <div class="chart-axis-labels">
-            <span>План</span>
-            <span>Факт</span>
-          </div>
+            <!-- arrow -->
+            <path id="arrow" d="" fill="none" stroke="#334155" stroke-width="1.2" stroke-dasharray="3 6" marker-end="url(#mNeutral)"/>
+            <text id="arrowLabel" x="490" y="130" font-family="Intel One Mono, Segoe UI, sans-serif" font-size="22" font-weight="500" fill="#111827" text-anchor="start"/>
+          </svg>
+        </div>
+        <div class="chart-axis-labels">
+          <span>План</span>
+          <span>Факт</span>
         </div>
       </div>
-
-    </div><!-- /right-col -->
+    </div>
   </div><!-- /layout -->
 </div><!-- /shell -->
 
