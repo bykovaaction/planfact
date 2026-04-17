@@ -20,6 +20,12 @@
       --red:      #e05252;
       --green-dim:#e8f8f0;
       --red-dim:  #fdecec;
+      --demo-text: #7f8da3;
+      --demo-muted: #8d99ab;
+      --demo-green: #87b79d;
+      --demo-red: #cc9a9a;
+      --demo-green-dim: #eef7f2;
+      --demo-red-dim: #f9eeee;
       --font-main: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", sans-serif;
       --mono: var(--font-main);
       --serif: var(--font-main);
@@ -386,6 +392,25 @@
     .chart-axis-labels span:first-child { left: 27.2%; }
     .chart-axis-labels span:last-child  { left: 58.1%; }
 
+    /* ── Demo result state ── */
+    .right-col.demo-mode .panel-head,
+    .right-col.demo-mode .kpi-label,
+    .right-col.demo-mode .kpi-sub,
+    .right-col.demo-mode .bd-cell-label,
+    .right-col.demo-mode .chart-axis-labels {
+      color: var(--demo-muted);
+    }
+
+    .right-col.demo-mode .kpi-value.populated { color: var(--demo-text); }
+    .right-col.demo-mode .kpi-value.positive  { color: var(--demo-green); }
+    .right-col.demo-mode .kpi-value.negative  { color: var(--demo-red); }
+    .right-col.demo-mode .bd-cell-value.pos   { color: var(--demo-green); }
+    .right-col.demo-mode .bd-cell-value.neg   { color: var(--demo-red); }
+    .right-col.demo-mode .verdict-text        { color: var(--demo-text); }
+    .right-col.demo-mode .verdict-icon.pos    { background: var(--demo-green-dim); color: var(--demo-green); }
+    .right-col.demo-mode .verdict-icon.neg    { background: var(--demo-red-dim); color: var(--demo-red); }
+    .right-col.demo-mode .verdict-icon.neu    { color: var(--demo-muted); }
+
     /* ── Animations ── */
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(6px); }
@@ -444,7 +469,7 @@
     </aside>
 
     <!-- Right: output -->
-    <div class="right-col">
+    <div class="right-col" id="rightCol">
 
       <!-- KPI strip -->
       <div class="kpi-strip panel">
@@ -553,8 +578,9 @@
   const kpiDev     = $("kpiDev");
   const kpiPlanSub = $("kpiPlanSub");
   const kpiFactSub = $("kpiFactSub");
- const kpiDevSub  = $("kpiDevSub");
+const kpiDevSub  = $("kpiDevSub");
 const kpiMethod  = $("kpiMethod");
+const rightCol   = $("rightCol");
 const verdict    = $("verdict");
   const verdictIcon= $("verdictIcon");
   const verdictText= $("verdictText");
@@ -615,7 +641,7 @@ const bd1Label   = $("bd1Label");
   }
 
   // ─── Chart ────────────────────────────────────────────────
-  function renderChart(plan, fact, annotate) {
+  function renderChart(plan, fact, annotate, demo = false) {
     const W = 680, H = 280;
     const xL = 60, xR = 640, yT = 18, yB = 260;
     const xPlanC = 185, xFactC = 395, bW = 70;
@@ -662,11 +688,11 @@ const bd1Label   = $("bd1Label");
       el.setAttribute("y", top.toFixed(1));
       el.setAttribute("height", h.toFixed(1));
       if (val > 0) {
-        el.setAttribute("fill", "#9fdac0");
+        el.setAttribute("fill", demo ? "#bfd6c8" : "#9fdac0");
       } else if (val < 0) {
-        el.setAttribute("fill", "#f2b0b0");
+        el.setAttribute("fill", demo ? "#e2c3c3" : "#f2b0b0");
       } else {
-        el.setAttribute("fill", "#94a3b8");
+        el.setAttribute("fill", demo ? "#b5c0d0" : "#94a3b8");
       }
     }
 
@@ -696,7 +722,11 @@ const bd1Label   = $("bd1Label");
 
     const dev = ((fact - plan) / Math.abs(plan)) * 100;
     const devRnd = Math.round(dev);
-    const color  = devRnd > 0 ? "#3dba82" : devRnd < 0 ? "#e05252" : "#64748b";
+    const color  = devRnd > 0
+      ? (demo ? "#87b79d" : "#3dba82")
+      : devRnd < 0
+        ? (demo ? "#cc9a9a" : "#e05252")
+        : (demo ? "#8d99ab" : "#64748b");
 
     arrowEl.setAttribute("stroke", "#334155");
     arrowEl.setAttribute("stroke-width", "1.2");
@@ -715,7 +745,9 @@ const bd1Label   = $("bd1Label");
   }
 
   // ─── Render result ────────────────────────────────────────
-  function renderResult(plan, fact) {
+  function renderResult(plan, fact, options = {}) {
+    const { demo = false } = options;
+    rightCol.classList.toggle("demo-mode", demo);
     errorEl.textContent = "";
 
     // KPI: plan
@@ -787,7 +819,11 @@ breakdown.className = "breakdown show";
 breakdown.className = "breakdown";
     }
 
-    renderChart(plan, fact, true);
+    renderChart(plan, fact, true, demo);
+  }
+
+  function renderDemoState() {
+    renderResult(-100, 50, { demo: true });
   }
 
   // ─── Input handling ────────────────────────────────────────
@@ -813,27 +849,14 @@ breakdown.className = "breakdown";
     return;
   }
 
-  renderResult(plan, fact);
+  renderResult(plan, fact, { demo: false });
 });
 
   clearBtn.addEventListener("click", () => {
     planInput.value = "";
     factInput.value = "";
     errorEl.textContent = "";
-    verdict.className = "verdict";
-    breakdownPanel.style.display = "none";
-    breakdown.className = "breakdown";
-    kpiPlan.textContent = "—";
-    kpiFact.textContent = "—";
-    kpiDev.textContent = "—";
-    kpiPlan.className = "kpi-value";
-    kpiFact.className = "kpi-value";
-    kpiDev.className = "kpi-value";
-    kpiPlanSub.textContent = "";
-    kpiFactSub.textContent = "";
-    kpiDevSub.textContent = "";
-    kpiMethod.textContent = "";
-    renderChart(0, 0, false);
+    renderDemoState();
     planInput.focus();
   });
 
@@ -841,28 +864,29 @@ breakdown.className = "breakdown";
     inp.addEventListener("input", () => {
       const { plan, fact, pr, fr } = parseInputs();
       errorEl.textContent = "";
+      if (!pr && !fr) { renderDemoState(); return; }
+      rightCol.classList.remove("demo-mode");
       verdict.className = "verdict";
       breakdownPanel.style.display = "none";
 breakdown.className = "breakdown";
-      if (!pr && !fr) {
-  kpiPlan.textContent = "—";
-  kpiFact.textContent = "—";
-  kpiDev.textContent = "—";
-  kpiPlanSub.textContent = "";
-  kpiFactSub.textContent = "";
-  kpiDevSub.textContent = "";
-  kpiMethod.textContent = "";
-  renderChart(0, 0, false);
-  return;
-}
+      kpiPlan.textContent = "—";
+      kpiFact.textContent = "—";
+      kpiDev.textContent = "—";
+      kpiPlan.className = "kpi-value";
+      kpiFact.className = "kpi-value";
+      kpiDev.className = "kpi-value";
+      kpiPlanSub.textContent = "";
+      kpiFactSub.textContent = "";
+      kpiDevSub.textContent = "";
+      kpiMethod.textContent = "";
       const planPreview = (pr && plan !== null) ? plan : 0;
       const factPreview = (fr && fact !== null) ? fact : 0;
-      renderChart(planPreview, factPreview, false);
+      renderChart(planPreview, factPreview, false, false);
     });
   });
 
-  // initial empty chart
-  renderChart(0, 0, false);
+  // initial demo state
+  renderDemoState();
 </script>
 </body>
 </html>
