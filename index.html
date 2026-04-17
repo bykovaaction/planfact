@@ -141,7 +141,7 @@
 
     .panel-head {
       padding: 14px 18px 10px;
-      font-size: 13px;
+      font-size: 17px;
       line-height: 1.3;
       font-weight: 600;
       letter-spacing: -0.01em;
@@ -156,7 +156,7 @@
 
     .field label {
       display: block;
-      font-size: 13px;
+      font-size: 17px;
       line-height: 1.3;
       font-weight: 600;
       letter-spacing: -0.01em;
@@ -199,13 +199,25 @@
       border: 1px solid #6f4389;
       border-radius: 999px;
       font-family: var(--mono);
-      font-size: 13px;
+      font-size: 17px;
       line-height: 1.3;
       font-weight: 600;
       letter-spacing: -0.01em;
       color: #ffffff;
       cursor: pointer;
       transition: none;
+    }
+
+    .btn-secondary {
+      margin-top: 10px;
+      background: #f1f1ef;
+      color: var(--text);
+      border: 1px solid rgba(16,16,16,0.06);
+    }
+
+    .btn.btn-secondary:hover {
+      background: #ebebe8;
+      color: var(--text);
     }
 
     .btn::before { display: none; }
@@ -247,7 +259,7 @@
     }
 
     .kpi-label {
-      font-size: 13px;
+      font-size: 17px;
       line-height: 1.3;
       font-weight: 600;
       letter-spacing: -0.01em;
@@ -270,7 +282,7 @@
     .kpi-value.negative  { color: var(--red); }
 
     .kpi-sub {
-      font-size: 0.68rem;
+      font-size: 13px;
       color: var(--muted);
       margin-top: 6px;
       min-height: 14px;
@@ -338,7 +350,7 @@
     }
 
     .bd-cell-label {
-      font-size: 0.62rem;
+      font-size: 13px;
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--muted);
@@ -447,6 +459,7 @@
             </div>
           </div>
           <button class="btn" id="calcBtn" type="button"><span>Рассчитать отклонение</span></button>
+          <button class="btn btn-secondary" id="clearBtn" type="button"><span>Очистить</span></button>
           <div class="error-msg" id="error"></div>
         </div>
       </div>
@@ -555,6 +568,7 @@
   const planInput  = $("plan");
   const factInput  = $("fact");
   const calcBtn    = $("calcBtn");
+  const clearBtn   = $("clearBtn");
   const errorEl    = $("error");
   const kpiPlan    = $("kpiPlan");
   const kpiFact    = $("kpiFact");
@@ -823,6 +837,27 @@ breakdown.className = "breakdown";
 
   renderResult(plan, fact);
 });
+
+  clearBtn.addEventListener("click", () => {
+    planInput.value = "";
+    factInput.value = "";
+    errorEl.textContent = "";
+    verdict.className = "verdict";
+    breakdownPanel.style.display = "none";
+    breakdown.className = "breakdown";
+    kpiPlan.textContent = "—";
+    kpiFact.textContent = "—";
+    kpiDev.textContent = "—";
+    kpiPlan.className = "kpi-value";
+    kpiFact.className = "kpi-value";
+    kpiDev.className = "kpi-value";
+    kpiPlanSub.textContent = "";
+    kpiFactSub.textContent = "";
+    kpiDevSub.textContent = "";
+    kpiMethod.textContent = "";
+    renderChart(0, 0, false);
+    planInput.focus();
+  });
 
   [planInput, factInput].forEach(inp => {
     inp.addEventListener("input", () => {
